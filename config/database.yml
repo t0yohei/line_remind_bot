@@ -48,10 +48,10 @@ test:
 #     url: <%= ENV['DATABASE_URL'] %>
 #
 production:
- <<: *default
- adapter: postgresql
- encoding: unicode
- pool: 5
+  <<: *default
+  adapter: postgresql
+  encoding: unicode
+  pool: 5
   database: line_remind_bot_production
   username: line_remind_bot
   password: <%= ENV['LINE_REMIND_BOT_DATABASE_PASSWORD'] %>
