@@ -37,6 +37,10 @@ gem 'jbuilder', '~> 2.5'
 
 gem 'line-bot-api'
 
+gem 'dotenv-rails'
+gem 'faraday'
+gem 'faraday_middleware'
+
 group :production do
   gem 'rails_12factor'
 end
