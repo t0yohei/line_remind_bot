@@ -10,19 +10,28 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171215174043) do
+ActiveRecord::Schema.define(version: 20180101080123) do
 
   create_table "functions", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
-    t.string "fuction_id"
     t.string "name"
+    t.string "content"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
   create_table "rooms", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
-    t.string "room_id"
-    t.string "fanction"
-    t.string "userID"
+    t.string "roomId"
+    t.string "fanctionId"
+    t.string "userId"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "schedules", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+    t.date "date"
+    t.string "roomId"
+    t.string "contents"
+    t.string "functionId"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
