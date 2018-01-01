@@ -1,11 +1,13 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
+  date: 2018-01-01
   roomId: MyString
-  fanctionId: MyString
-  userId: MyString
+  contents: MyString
+  functionId: MyString
 
 two:
+  date: 2018-01-01
   roomId: MyString
-  fanctionId: MyString
-  userId: MyString
+  contents: MyString
+  functionId: MyString
