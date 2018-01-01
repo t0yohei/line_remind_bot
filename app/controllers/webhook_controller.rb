@@ -11,8 +11,7 @@ class WebhookController < ApplicationController
       render :nothing => true, status: 470
     end
 
-    result = params[:result][0]
-    logger.info({from_line: result})
+    @result = params[:result][0]
 
     event = params["events"][0]
     event_type = event["type"]
@@ -33,7 +32,10 @@ class WebhookController < ApplicationController
       logger.info({fail: res})
     end
 
-    render :nothing => true, status: :ok
+    render "index"
+  end
+
+  def index
   end
 
   private
