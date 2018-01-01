@@ -8,4 +8,8 @@
 
 # coding: utf-8
 
-Schedule.create(date: '2018-01-01', user_Id: movies.first)
+Schedule.create(date: '2018-01-01', roomId: '1', contents:'テスト1', functionId: '1')
+Schedule.create(date: '2018-01-02', roomId: '1', contents:'テスト1', functionId: '1')
+Schedule.create(date: '2018-02-02', roomId: '1', contents:'テスト1', functionId: '1')
+
+Function.create(name: 'parrot', content:'おうむ返しbot')
