@@ -1,2 +1,0 @@
-class Function < ApplicationRecord
-end
