@@ -20,6 +20,54 @@ class WebhookController < ApplicationController
               type: 'text',
               text: '日付を入力してください'
             }
+          elsif input_text == '毎週'
+            message = {
+              type: 'template',
+              altText: 'this is an template message',
+              template: {
+                type: 'buttons',
+                title: '曜日選択',
+                # thumbnailImageUrl: 'https://example.com/image.jpg',
+                text: '曜日を選択してください',
+                actions: [
+                  {
+                    type: 'message',
+                    label: '月曜日',
+                    text: '月曜日'
+                  },
+                  {
+                    type: 'message',
+                    label: '火曜日',
+                    text: '火曜日'
+                  },
+                  {
+                    type: 'message',
+                    label: '水曜日',
+                    text: '水曜日'
+                  },
+                  {
+                    type: 'message',
+                    label: '木曜日',
+                    text: '木曜日'
+                  },
+                  # {
+                  #   type: 'message',
+                  #   label: '金曜日',
+                  #   text: '金曜日'
+                  # },
+                  # {
+                  #   type: 'message',
+                  #   label: '土曜日',
+                  #   text: '土曜日'
+                  # },
+                  # {
+                  #   type: 'message',
+                  #   label: '日曜日',
+                  #   text: '日曜日'
+                  # },
+                ]
+              }
+            }
           else
             message = {
               type: 'text',
