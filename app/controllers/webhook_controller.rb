@@ -28,6 +28,8 @@ class WebhookController < ApplicationController
     when Line::Bot::Event::MessageType::Text
       input_text = event.message['text']
       case input_text
+      when /予定を登録/
+        message = create_default_message
       when /一日だけ/
         message = create_specific_day_message(event)
       when /毎日/
@@ -43,14 +45,17 @@ class WebhookController < ApplicationController
         message = create_weekly_message(event)
       when /毎月/
         message = create_monthly_message(event)
-      else
-        message = {
-          type: 'text',
-          text: 'タイトルとカテゴリを入力してください' \
-          "\nカテゴリ：「一日だけ」・「毎日」・「毎週」・「毎月」\n例：\n海水浴\n毎日"
-        }
       end
     end
+    return message
+  end
+
+  def create_default_message
+    message = {
+      type: 'text',
+      text: 'タイトルとカテゴリを入力してください' \
+      "\nカテゴリ：「一日だけ」・「毎日」・「毎週」・「毎月」\n例：\n海水浴\n毎日"
+    }
     return message
   end
 
