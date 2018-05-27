@@ -12,10 +12,10 @@ class WebhookController < ApplicationController
     events.each { |event|
       case event
       when Line::Bot::Event::Postback
-          message = {
-            type: 'text',
-            text: '入力されました'
-          }
+        message = {
+          type: 'text',
+          text: '入力されました'
+        }
         # case event['postback']['params']
         # when Line::Bot::Event::Postback::Params::Datetime
         #   message = {
@@ -33,24 +33,33 @@ class WebhookController < ApplicationController
         when Line::Bot::Event::MessageType::Text
           input_text = event.message['text']
           case input_text
+          when '予定を登録'
+            message = {
+              type: 'text',
+              text: "タイトルとカテゴリを入力してください\n例：\n海水浴\n毎日"
+            }
           when '一日だけ'
             message = {
-              type: 'template',
-              altText: 'this is an template message',
-              template: {
-                type: 'buttons',
-                title: '一日だけ',
-                text: '日時を指定',
-                actions: [
-                  {
-                    type: 'datetimepicker',
-                    label: '日時を指定',
-                    data: '一日だけ',
-                    mode: 'datetime',
-                  },
-                ]
-              }
+              type: 'text',
+              text: 'タイトルを入力してください'
             }
+            # message = {
+            #   type: 'template',
+            #   altText: 'this is an template message',
+            #   template: {
+            #     type: 'buttons',
+            #     title: '一日だけ',
+            #     text: event.message['text'] + '日時を指定',
+            #     actions: [
+            #       {
+            #         type: 'datetimepicker',
+            #         label: '日時を指定',
+            #         data: event.message['text'] + '一日だけ',
+            #         mode: 'datetime',
+            #       }
+            #     ]
+            #   }
+            # }
           when '毎日'
             message = {
               type: 'template',
@@ -65,7 +74,7 @@ class WebhookController < ApplicationController
                     label: '時間を指定',
                     data: '毎日',
                     mode: 'time',
-                  },
+                  }
                 ]
               }
             }
@@ -98,7 +107,7 @@ class WebhookController < ApplicationController
                     type: 'message',
                     label: 'その他の曜日',
                     text: 'その他の曜日'
-                  },
+                  }
                 ]
               }
             }
@@ -131,7 +140,7 @@ class WebhookController < ApplicationController
                     type: 'message',
                     label: '日曜日',
                     text: '日曜日'
-                  },
+                  }
                 ]
               }
             }
@@ -149,14 +158,14 @@ class WebhookController < ApplicationController
                     label: '日時を指定',
                     data: '毎月',
                     mode: 'datetime',
-                  },
+                  }
                 ]
               }
             }
           else
             message = {
               type: 'text',
-              text: event.message['text'] + 'が入力されました'
+              text: 'タイトル：' + event.message['text'] + '「毎日」'
             }
           end
         end
