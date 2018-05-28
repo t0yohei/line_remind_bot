@@ -12,6 +12,7 @@ class WebhookController < ApplicationController
     events.each do |event|
       case event
       when Line::Bot::Event::Postback
+        create_schedule(event)
         message = create_complete_message(event)
       when Line::Bot::Event::Message
         message = create_response_message(event)
@@ -22,6 +23,16 @@ class WebhookController < ApplicationController
   end
 
   private
+
+  def create_schedule(event)
+    case event['postback']['data']
+    when /一日だけ/
+    when /毎日/
+    when /毎週/
+    when /毎月/
+
+    end
+  end
 
   def create_response_message(event)
     case event.type
