@@ -20,7 +20,7 @@ group :development, :test do
   gem 'binding_of_caller'
   gem 'rspec-rails'
   gem 'rails-controller-testing'
-  gem 'factory_girl_rails'
+  gem 'factory_bot_rails'
   gem 'guard-rspec'
   gem 'spring-commands-rspec'
 end
