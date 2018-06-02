@@ -12,8 +12,7 @@ class WebhookController < ApplicationController
     events.each do |event|
       case event
       when Line::Bot::Event::Postback
-        create_schedule(event)
-        message = create_complete_message(event)
+        message = create_schedule(event)
       when Line::Bot::Event::Message
         message = create_response_message(event)
       end
@@ -25,11 +24,53 @@ class WebhookController < ApplicationController
   private
 
   def create_schedule(event)
-    case event['postback']['data']
+    post_data = event['postback']['data']
+    talk_room_type_id = TalkRoomType.find_by(type_name: event['source']['type']).id
+    target_id_type = TalkRoomType.find_by(id: talk_room_type_id).target_id_type
+    talk_room_id = event['source'][target_id_type]
+    create_user_id = event['source']['userId']
+
+    case post_data
     when /一日だけ/
+      title = post_data.slice!("\n一日だけ")
+      schedule_type = '一日だけ'
+      message = {
+        type: 'text',
+        text: '一日だけ'
+      }
+      return message
+
+
     when /毎日/
+      title = post_data.delete!("\n毎日")
+      schedule_type = 'everyday'
+      post_time = event['postback']['params']['time']
+      # post_time = Time.parse(event['postback']['params']['time'])
+      new_schedule = Schedule.new(
+        title: title,
+        talk_room_type_id: talk_room_type_id,
+        talk_room_id: talk_room_id,
+        schedule_type: schedule_type,
+        post_time: post_time,
+        create_user_id: create_user_id
+      )
+      if new_schedule.save
+        return create_complete_message(event)
+      else
+        return 'エラーが発生しました'
+      end
     when /毎週/
+      message = {
+        type: 'text',
+        text: '毎週'
+      }
+      return message
     when /毎月/
+      message = {
+        type: 'text',
+        text: '毎月'
+      }
+      return message
 
     end
   end
