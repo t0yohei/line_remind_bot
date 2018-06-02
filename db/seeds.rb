@@ -5,3 +5,7 @@
 #
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
+
+TalkRoomType.create(
+  [{ type_name: 'user' }, { type_name: 'room' }, { type_name: 'group' }]
+)

@@ -1,3 +1,3 @@
 class TalkRoomType < ApplicationRecord
-  has_meny :schedule
+  has_many :schedule
 end
