@@ -32,14 +32,24 @@ class WebhookController < ApplicationController
 
     case post_data
     when /一日だけ/
-      title = post_data.slice!("\n一日だけ")
-      schedule_type = '一日だけ'
-      message = {
-        type: 'text',
-        text: '一日だけ'
-      }
-      return message
-
+      title = post_data.delete!("\n一日だけ")
+      schedule_type = 'specific_day'
+      post_date = event['postback']['params']['datetime']
+      post_time = event['postback']['params']['datetime']
+      new_schedule = Schedule.new(
+        title: title,
+        talk_room_type_id: talk_room_type_id,
+        talk_room_id: talk_room_id,
+        schedule_type: schedule_type,
+        post_date: post_date,
+        post_time: post_time,
+        create_user_id: create_user_id
+      )
+      if new_schedule.save
+        return create_complete_message(event)
+      else
+        return 'エラーが発生しました'
+      end
 
     when /毎日/
       title = post_data.delete!("\n毎日")
@@ -60,17 +70,44 @@ class WebhookController < ApplicationController
         return 'エラーが発生しました'
       end
     when /毎週/
-      message = {
-        type: 'text',
-        text: '毎週'
-      }
-      return message
+      title = post_data.delete!("\n毎週")
+      schedule_type = 'everyweek'
+      # post_day = event['postback']['params']['datetime']
+      post_time = event['postback']['params']['datetime']
+      new_schedule = Schedule.new(
+        title: title,
+        talk_room_type_id: talk_room_type_id,
+        talk_room_id: talk_room_id,
+        schedule_type: schedule_type,
+        # post_day: post_day,
+        post_time: post_time,
+        create_user_id: create_user_id
+      )
+      if new_schedule.save
+        return create_complete_message(event)
+      else
+        return 'エラーが発生しました'
+      end
+
     when /毎月/
-      message = {
-        type: 'text',
-        text: '毎月'
-      }
-      return message
+      title = post_data.delete!("\n毎月")
+      schedule_type = 'everymonth'
+      post_date = event['postback']['params']['datetime']
+      post_time = event['postback']['params']['datetime']
+      new_schedule = Schedule.new(
+        title: title,
+        talk_room_type_id: talk_room_type_id,
+        talk_room_id: talk_room_id,
+        schedule_type: schedule_type,
+        post_date: post_date,
+        post_time: post_time,
+        create_user_id: create_user_id
+      )
+      if new_schedule.save
+        return create_complete_message(event)
+      else
+        return 'エラーが発生しました'
+      end
 
     end
   end
