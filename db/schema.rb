@@ -27,6 +27,7 @@ ActiveRecord::Schema.define(version: 20180528142416) do
 
   create_table "talk_room_types", force: :cascade do |t|
     t.string "type_name"
+    t.string "target_id_type"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
