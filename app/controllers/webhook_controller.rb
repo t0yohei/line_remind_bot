@@ -14,7 +14,11 @@ class WebhookController < ApplicationController
       when Line::Bot::Event::Postback
         message = create_schedule(event)
       when Line::Bot::Event::Message
+        if event.message['text'][0, 2] == '毎週' && event.message['text'][-2, 2] == '曜日'
+          message = create_weekly_time_message(event)
+        else
         message = create_response_message(event)
+        end
       end
       client.reply_message(event['replyToken'], message)
     end
@@ -22,6 +26,27 @@ class WebhookController < ApplicationController
   end
 
   private
+
+  def create_weekly_time_message(event)
+    message = {
+      type: 'template',
+      altText: 'this is an template message',
+      template: {
+        type: 'buttons',
+        title: '時間を選択',
+        text: event.message['text'],
+        actions: [
+          {
+            type: 'datetimepicker',
+            label: '日時を指定',
+            data: event.message['text'],
+            mode: 'datetime'
+          }
+        ]
+      }
+    }
+    return message
+  end
 
   def create_schedule(event)
     post_data = event['postback']['data']
@@ -70,16 +95,32 @@ class WebhookController < ApplicationController
         return 'エラーが発生しました'
       end
     when /毎週/
-      title = post_data.delete!("\n毎週")
       schedule_type = 'everyweek'
-      # post_day = event['postback']['params']['datetime']
+      post_day = event['postback']['data'][-3, 3]
+      title = post_data.delete!("\n毎週").delete(post_day)
+      case post_day
+      when '月曜日'
+        post_day = 'Monday'
+      when '火曜日'
+        post_day = 'Tuesday'
+      when '水曜日'
+        post_day = 'Wednesday'
+      when '木曜日'
+        post_day = 'Thursday'
+      when '金曜日'
+        post_day = 'Friday'
+      when '土曜日'
+        post_day = 'Saturday'
+      when '日曜日'
+        post_day = 'Sunday'
+      end
       post_time = event['postback']['params']['datetime']
       new_schedule = Schedule.new(
         title: title,
         talk_room_type_id: talk_room_type_id,
         talk_room_id: talk_room_id,
         schedule_type: schedule_type,
-        # post_day: post_day,
+        post_day: post_day,
         post_time: post_time,
         create_user_id: create_user_id
       )
@@ -109,6 +150,33 @@ class WebhookController < ApplicationController
         return 'エラーが発生しました'
       end
 
+    end
+  end
+
+  def create_weekly_schedule(event)
+    post_data = event['postback']['data']
+    talk_room_type_id = TalkRoomType.find_by(type_name: event['source']['type']).id
+    target_id_type = TalkRoomType.find_by(id: talk_room_type_id).target_id_type
+    talk_room_id = event['source'][target_id_type]
+    create_user_id = event['source']['userId']
+
+    title = post_data.delete!("\n一日だけ")
+    schedule_type = 'specific_day'
+    post_date = event['postback']['params']['datetime']
+    post_time = event['postback']['params']['datetime']
+    new_schedule = Schedule.new(
+      title: title,
+      talk_room_type_id: talk_room_type_id,
+      talk_room_id: talk_room_id,
+      schedule_type: schedule_type,
+      post_date: post_date,
+      post_time: post_time,
+      create_user_id: create_user_id
+    )
+    if new_schedule.save
+      return create_complete_message(event)
+    else
+      return 'エラーが発生しました'
     end
   end
 
@@ -213,7 +281,6 @@ class WebhookController < ApplicationController
       template: {
         type: 'buttons',
         title: '曜日選択',
-        # thumbnailImageUrl: 'https://example.com/image.jpg',
         text: event.message['text'],
         actions: [
           {
@@ -249,7 +316,6 @@ class WebhookController < ApplicationController
       template: {
         type: 'buttons',
         title: '曜日選択',
-        # thumbnailImageUrl: 'https://example.com/image.jpg',
         text: event.message['text'] + "\n曜日を選択してください",
         actions: [
           {
@@ -291,7 +357,7 @@ class WebhookController < ApplicationController
             type: 'datetimepicker',
             label: '日時を指定',
             data: event.message['text'],
-            mode: 'datetime'
+            mode: 'time'
           }
         ]
       }
