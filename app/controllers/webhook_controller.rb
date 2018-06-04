@@ -12,9 +12,13 @@ class WebhookController < ApplicationController
     events.each do |event|
       case event
       when Line::Bot::Event::Postback
-        message = create_complete_message(event)
+        message = create_schedule(event)
       when Line::Bot::Event::Message
+        if event.message['text'][-5, 2] == '毎週' && event.message['text'][-2, 2] == '曜日'
+          message = create_weekly_time_message(event)
+        else
         message = create_response_message(event)
+        end
       end
       client.reply_message(event['replyToken'], message)
     end
@@ -23,11 +27,166 @@ class WebhookController < ApplicationController
 
   private
 
+  def create_weekly_time_message(event)
+    message = {
+      type: 'template',
+      altText: 'this is an template message',
+      template: {
+        type: 'buttons',
+        title: '時間を選択',
+        text: event.message['text'],
+        actions: [
+          {
+            type: 'datetimepicker',
+            label: '日時を指定',
+            data: event.message['text'],
+            mode: 'datetime'
+          }
+        ]
+      }
+    }
+    return message
+  end
+
+  def create_schedule(event)
+    post_data = event['postback']['data']
+    talk_room_type_id = TalkRoomType.find_by(type_name: event['source']['type']).id
+    target_id_type = TalkRoomType.find_by(id: talk_room_type_id).target_id_type
+    talk_room_id = event['source'][target_id_type]
+    create_user_id = event['source']['userId']
+
+    case post_data
+    when /一日だけ/
+      title = post_data.delete!("\n一日だけ")
+      schedule_type = 'specific_day'
+      post_date = event['postback']['params']['datetime']
+      post_time = event['postback']['params']['datetime']
+      new_schedule = Schedule.new(
+        title: title,
+        talk_room_type_id: talk_room_type_id,
+        talk_room_id: talk_room_id,
+        schedule_type: schedule_type,
+        post_date: post_date,
+        post_time: post_time,
+        create_user_id: create_user_id
+      )
+      if new_schedule.save
+        return create_complete_message(event)
+      else
+        return 'エラーが発生しました'
+      end
+
+    when /毎日/
+      title = post_data.delete!("\n毎日")
+      schedule_type = 'everyday'
+      post_time = event['postback']['params']['time']
+      # post_time = Time.parse(event['postback']['params']['time'])
+      new_schedule = Schedule.new(
+        title: title,
+        talk_room_type_id: talk_room_type_id,
+        talk_room_id: talk_room_id,
+        schedule_type: schedule_type,
+        post_time: post_time,
+        create_user_id: create_user_id
+      )
+      if new_schedule.save
+        return create_complete_message(event)
+      else
+        return 'エラーが発生しました'
+      end
+    when /毎週/
+      schedule_type = 'everyweek'
+      post_day = event['postback']['data'][-3, 3]
+      title = post_data.delete!("\n毎週").delete(post_day)
+      case post_day
+      when '月曜日'
+        post_day = 'Monday'
+      when '火曜日'
+        post_day = 'Tuesday'
+      when '水曜日'
+        post_day = 'Wednesday'
+      when '木曜日'
+        post_day = 'Thursday'
+      when '金曜日'
+        post_day = 'Friday'
+      when '土曜日'
+        post_day = 'Saturday'
+      when '日曜日'
+        post_day = 'Sunday'
+      end
+      post_time = event['postback']['params']['datetime']
+      new_schedule = Schedule.new(
+        title: title,
+        talk_room_type_id: talk_room_type_id,
+        talk_room_id: talk_room_id,
+        schedule_type: schedule_type,
+        post_day: post_day,
+        post_time: post_time,
+        create_user_id: create_user_id
+      )
+      if new_schedule.save
+        return create_complete_message(event)
+      else
+        return 'エラーが発生しました'
+      end
+
+    when /毎月/
+      title = post_data.delete!("\n毎月")
+      schedule_type = 'everymonth'
+      post_date = event['postback']['params']['datetime']
+      post_time = event['postback']['params']['datetime']
+      new_schedule = Schedule.new(
+        title: title,
+        talk_room_type_id: talk_room_type_id,
+        talk_room_id: talk_room_id,
+        schedule_type: schedule_type,
+        post_date: post_date,
+        post_time: post_time,
+        create_user_id: create_user_id
+      )
+      if new_schedule.save
+        return create_complete_message(event)
+      else
+        return 'エラーが発生しました'
+      end
+
+    end
+  end
+
+  def create_weekly_schedule(event)
+    post_data = event['postback']['data']
+    talk_room_type_id = TalkRoomType.find_by(type_name: event['source']['type']).id
+    target_id_type = TalkRoomType.find_by(id: talk_room_type_id).target_id_type
+    talk_room_id = event['source'][target_id_type]
+    create_user_id = event['source']['userId']
+
+    title = post_data.delete!("\n一日だけ")
+    schedule_type = 'specific_day'
+    post_date = event['postback']['params']['datetime']
+    post_time = event['postback']['params']['datetime']
+    new_schedule = Schedule.new(
+      title: title,
+      talk_room_type_id: talk_room_type_id,
+      talk_room_id: talk_room_id,
+      schedule_type: schedule_type,
+      post_date: post_date,
+      post_time: post_time,
+      create_user_id: create_user_id
+    )
+    if new_schedule.save
+      return create_complete_message(event)
+    else
+      return 'エラーが発生しました'
+    end
+  end
+
   def create_response_message(event)
     case event.type
     when Line::Bot::Event::MessageType::Text
       input_text = event.message['text']
       case input_text
+      when /予定を登録/
+        message = create_default_message
       when /一日だけ/
         message = create_specific_day_message(event)
       when /毎日/
@@ -43,14 +202,17 @@ class WebhookController < ApplicationController
         message = create_weekly_message(event)
       when /毎月/
         message = create_monthly_message(event)
-      else
-        message = {
-          type: 'text',
-          text: 'タイトルとカテゴリを入力してください' \
-          "\nカテゴリ：「一日だけ」・「毎日」・「毎週」・「毎月」\n例：\n海水浴\n毎日"
-        }
       end
     end
+    return message
+  end
+
+  def create_default_message
+    message = {
+      type: 'text',
+      text: 'タイトルとカテゴリを入力してください' \
+      "\nカテゴリ：「一日だけ」・「毎日」・「毎週」・「毎月」\n例：\n海水浴\n毎日"
+    }
     return message
   end
 
@@ -119,7 +281,6 @@ class WebhookController < ApplicationController
       template: {
         type: 'buttons',
         title: '曜日選択',
-        # thumbnailImageUrl: 'https://example.com/image.jpg',
         text: event.message['text'],
         actions: [
           {
@@ -155,7 +316,6 @@ class WebhookController < ApplicationController
       template: {
         type: 'buttons',
         title: '曜日選択',
-        # thumbnailImageUrl: 'https://example.com/image.jpg',
         text: event.message['text'] + "\n曜日を選択してください",
         actions: [
           {
@@ -197,7 +357,7 @@ class WebhookController < ApplicationController
             type: 'datetimepicker',
             label: '日時を指定',
             data: event.message['text'],
-            mode: 'datetime'
+            mode: 'time'
           }
         ]
       }

@@ -8,6 +8,7 @@ end
 gem 'rails', '~> 5.1.4'
 gem 'puma', '~> 3.7'
 gem 'line-bot-api'
+gem 'whenever', :require => false
 
 group :production do
   gem 'pg', '0.18.4'
@@ -20,7 +21,7 @@ group :development, :test do
   gem 'binding_of_caller'
   gem 'rspec-rails'
   gem 'rails-controller-testing'
-  gem 'factory_girl_rails'
+  gem 'factory_bot_rails'
   gem 'guard-rspec'
   gem 'spring-commands-rspec'
 end
