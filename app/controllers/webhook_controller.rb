@@ -14,7 +14,7 @@ class WebhookController < ApplicationController
       when Line::Bot::Event::Postback
         message = create_schedule(event)
       when Line::Bot::Event::Message
-        if event.message['text'][0, 2] == '毎週' && event.message['text'][-2, 2] == '曜日'
+        if event.message['text'][-5, 2] == '毎週' && event.message['text'][-2, 2] == '曜日'
           message = create_weekly_time_message(event)
         else
         message = create_response_message(event)
