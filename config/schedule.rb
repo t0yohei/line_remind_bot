@@ -5,7 +5,8 @@ set :environment, :development
 
 # 1分毎に回す
 every 1.minute do
-  runner 'RegularMessage.remind_schedules'
+  p "test1"
+  runner "RegularMessage.remind_schedules"
 end
 
 # Example:
