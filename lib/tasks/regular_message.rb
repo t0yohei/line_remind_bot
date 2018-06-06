@@ -1,9 +1,9 @@
-class RegularMessage
+class Tasks::RegularMessage
   def self.remind_schedules
     # schedules = select_schedules(Date.today)
     p "test2"
-    schedules = ""
-    post_schedules(schedules)
+    # schedules = ""
+    # post_schedules(schedules)
   end
 
   def select_schedules(date)
