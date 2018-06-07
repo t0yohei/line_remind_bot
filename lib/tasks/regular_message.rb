@@ -1,9 +1,12 @@
+require 'line/bot'
+
 class Tasks::RegularMessage
   def self.remind_schedules
+
     # schedules = select_schedules(Date.today)
     p "test2"
-    # schedules = ""
-    # post_schedules(schedules)
+    schedules = ""
+    post_schedules(schedules)
   end
 
   def select_schedules(date)
@@ -27,7 +30,8 @@ class Tasks::RegularMessage
   def select_monthly_schdules(date, schedules)
   end
 
-  def post_schedules(schedules)
+  def self.post_schedules(schedules)
+    schedule = ""
     message = {
       type: 'text',
       text: 'hello' + schedules
