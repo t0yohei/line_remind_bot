@@ -5,7 +5,8 @@ set :environment, :development
 
 # 1分毎に回す
 every 1.minute do
-  # runner "MyModel.some_process"
+  p "test1"
+  runner "Tasks::RegularMessage.remind_schedules"
 end
 
 # Example:
