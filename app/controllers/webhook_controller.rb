@@ -60,14 +60,17 @@ class WebhookController < ApplicationController
       title = post_data.delete!("\n一日だけ")
       schedule_type = 'specific_day'
       post_date = event['postback']['params']['datetime']
-      post_time = event['postback']['params']['datetime']
+      post_time = DateTime.parse(event['postback']['params']['datetime'])
+      post_hour = post_time.hour
+      post_minute = post_time.minute
       new_schedule = Schedule.new(
         title: title,
         talk_room_type_id: talk_room_type_id,
         talk_room_id: talk_room_id,
         schedule_type: schedule_type,
         post_date: post_date,
-        post_time: post_time,
+        post_hour: post_hour,
+        post_minute: post_minute,
         create_user_id: create_user_id
       )
       if new_schedule.save

@@ -7,7 +7,8 @@ class CreateSchedules < ActiveRecord::Migration[5.1]
       t.string :schedule_type
       t.date :post_date
       t.string :post_day
-      t.time :post_time
+      t.integer :post_hour
+      t.integer :post_minute
       t.string :create_user_id
 
       t.timestamps
