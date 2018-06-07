@@ -40,7 +40,7 @@ class WebhookController < ApplicationController
             type: 'datetimepicker',
             label: '日時を指定',
             data: event.message['text'],
-            mode: 'datetime'
+            mode: 'time'
           }
         ]
       }
@@ -82,14 +82,16 @@ class WebhookController < ApplicationController
     when /毎日/
       title = post_data.delete!("\n毎日")
       schedule_type = 'everyday'
-      post_time = event['postback']['params']['time']
-      # post_time = Time.parse(event['postback']['params']['time'])
+      post_time = DateTime.parse(event['postback']['params']['time'])
+      post_hour = post_time.hour
+      post_minute = post_time.minute
       new_schedule = Schedule.new(
         title: title,
         talk_room_type_id: talk_room_type_id,
         talk_room_id: talk_room_id,
         schedule_type: schedule_type,
-        post_time: post_time,
+        post_hour: post_hour,
+        post_minute: post_minute,
         create_user_id: create_user_id
       )
       if new_schedule.save
@@ -117,14 +119,17 @@ class WebhookController < ApplicationController
       when '日曜日'
         post_day = 'Sunday'
       end
-      post_time = event['postback']['params']['datetime']
+      post_time = DateTime.parse(event['postback']['params']['time'])
+      post_hour = post_time.hour
+      post_minute = post_time.minute
       new_schedule = Schedule.new(
         title: title,
         talk_room_type_id: talk_room_type_id,
         talk_room_id: talk_room_id,
         schedule_type: schedule_type,
         post_day: post_day,
-        post_time: post_time,
+        post_hour: post_hour,
+        post_minute: post_minute,
         create_user_id: create_user_id
       )
       if new_schedule.save
@@ -137,14 +142,17 @@ class WebhookController < ApplicationController
       title = post_data.delete!("\n毎月")
       schedule_type = 'everymonth'
       post_date = event['postback']['params']['datetime']
-      post_time = event['postback']['params']['datetime']
+      post_time = DateTime.parse(event['postback']['params']['datetime'])
+      post_hour = post_time.hour
+      post_minute = post_time.minute
       new_schedule = Schedule.new(
         title: title,
         talk_room_type_id: talk_room_type_id,
         talk_room_id: talk_room_id,
         schedule_type: schedule_type,
         post_date: post_date,
-        post_time: post_time,
+        post_hour: post_hour,
+        post_minute: post_minute,
         create_user_id: create_user_id
       )
       if new_schedule.save
@@ -166,14 +174,17 @@ class WebhookController < ApplicationController
     title = post_data.delete!("\n一日だけ")
     schedule_type = 'specific_day'
     post_date = event['postback']['params']['datetime']
-    post_time = event['postback']['params']['datetime']
+    post_time = DateTime.parse(event['postback']['params']['datetime'])
+    post_hour = post_time.hour
+    post_minute = post_time.minute
     new_schedule = Schedule.new(
       title: title,
       talk_room_type_id: talk_room_type_id,
       talk_room_id: talk_room_id,
       schedule_type: schedule_type,
       post_date: post_date,
-      post_time: post_time,
+      post_hour: post_hour,
+      post_minute: post_minute,
       create_user_id: create_user_id
     )
     if new_schedule.save
@@ -360,7 +371,7 @@ class WebhookController < ApplicationController
             type: 'datetimepicker',
             label: '日時を指定',
             data: event.message['text'],
-            mode: 'time'
+            mode: 'datetime'
           }
         ]
       }
