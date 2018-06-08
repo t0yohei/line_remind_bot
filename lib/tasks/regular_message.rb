@@ -7,7 +7,7 @@ class Tasks::RegularMessage
   end
 
   def select_schedules(date, datetime)
-    schedules =[]
+    schedules = []
     schedules = select_specific_day_schdules(date, datetime, schedules)
     # schedules = select_daily_schdules(date, schedules)
     # schedules = select_weekly_schdules(date, schedules)
@@ -16,16 +16,19 @@ class Tasks::RegularMessage
   end
 
   def select_specific_day_schdules(date, datetime, schedules)
-    # schedule = Schedule.where(post_data: date, post_time)
+    schedules << Schedule.where(schedule_type: 'specific_day', post_date: date, post_hour: datetime.hour, post_minute: datetime.minute).pluck(:title, :talk_room_type_id, :talk_room_id)
   end
 
-  def select_daily_schdules(date, schedules)
+  def select_daily_schdules(datetime, schedules)
+    schedules << Schedule.where(schedule_type: 'everyday', post_hour: datetime.hour, post_minute: datetime.minute).pluck(:title, :talk_room_type_id, :talk_room_id)
   end
 
-  def select_weekly_schdules(date, schedules)
+  def select_weekly_schdules(date, datetime, schedules)
+    schedules << Schedule.where(schedule_type: 'everyweek', post_day: date.wday, post_hour: datetime.hour, post_minute: datetime.minute).pluck(:title, :talk_room_type_id, :talk_room_id)
   end
 
-  def select_monthly_schdules(date, schedules)
+  def select_monthly_schdules(date, datetime, schedules)
+    schedules << Schedule.where(schedule_type: 'everymonth', post_date: date, post_hour: datetime.hour, post_minute: datetime.minute).pluck(:title, :talk_room_type_id, :talk_room_id)
   end
 
   def self.post_schedules(schedules)
