@@ -37,6 +37,7 @@ class Tasks::RegularMessage
     end
 
     def select_weekly_schdules(date, schedules)
+      p date.wday
       schedules <<
         Schedule.where(
           schedule_type: Schedule.schedule_types[:everyweek],
