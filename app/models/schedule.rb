@@ -1,6 +1,6 @@
 class Schedule < ApplicationRecord
   belongs_to :talk_room_type
-  enum schedule_type:
+  enum schedule_types:
     { specific_day: 0, everyday: 1, everyweek: 2,
       everymonth: 3 }
   enum post_wday:
