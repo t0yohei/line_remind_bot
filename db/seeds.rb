@@ -6,8 +6,10 @@
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
 
-TalkRoomType.create([
-  { type_name: 'user', target_id_type: 'userId' },
-  { type_name: 'room', target_id_type: 'roomId' },
-  { type_name: 'group', target_id_type: 'groupId' }
-])
+TalkRoomType.create(
+  [
+    { type_name: 'user', target_id_type: 'userId' },
+    { type_name: 'room', target_id_type: 'roomId' },
+    { type_name: 'group', target_id_type: 'groupId' }
+  ]
+)

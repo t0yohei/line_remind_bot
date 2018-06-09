@@ -5,8 +5,10 @@ class CreateSchedules < ActiveRecord::Migration[5.1]
       t.integer :talk_room_type_id
       t.string :talk_room_id
       t.string :schedule_type
-      t.date :post_date
-      t.string :post_day
+      t.integer :post_year
+      t.integer :post_month
+      t.integer :post_day
+      t.integer :post_wday
       t.integer :post_hour
       t.integer :post_minute
       t.string :create_user_id
