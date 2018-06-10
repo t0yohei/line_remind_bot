@@ -11,7 +11,7 @@ gem 'line-bot-api'
 gem 'whenever', :require => false
 
 group :production do
-  gem 'pg'
+  gem 'pg', '0.18.4'
 end
 
 group :development, :test do
