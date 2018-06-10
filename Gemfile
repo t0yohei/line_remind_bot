@@ -9,6 +9,7 @@ gem 'rails', '~> 5.1.4'
 gem 'puma', '~> 3.7'
 gem 'line-bot-api'
 gem 'whenever', :require => false
+gem 'uglifier'
 
 group :production do
   gem 'pg', '0.18.4'
