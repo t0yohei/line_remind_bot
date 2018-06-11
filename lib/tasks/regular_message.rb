@@ -59,8 +59,8 @@ module Tasks
 
       def post_schedules(schedules)
         client ||= Line::Bot::Client.new do |config|
-          config.channel_secret = Rails.application.secrets.LINE_CHANNEL_SECRET
-          config.channel_token = Rails.application.secrets.LINE_CHANNEL_TOKEN
+          config.channel_secret = ENV["LINE_CHANNEL_SECRET"]
+          config.channel_token = ENV["LINE_CHANNEL_TOKEN"]
         end
 
         schedules.each do |type_schedules|
