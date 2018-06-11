@@ -24,6 +24,6 @@ production:
  adapter: postgresql
  encoding: unicode
  pool: 5
-  database: line_remind_bot_production
-  username: line_remind_bot
-  password: <%= ENV['LINE_REMIND_BOT_DATABASE_PASSWORD'] %>
+ database: line_remind_bot_production
+ username: line_remind_bot
+ password: <%= ENV['LINE_REMIND_BOT_DATABASE_PASSWORD'] %>
