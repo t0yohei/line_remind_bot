@@ -12,13 +12,75 @@ class WebhookController < ApplicationController
     events.each do |event|
       case event
       when Line::Bot::Event::Postback
-        message = create_schedule(event)
+        # message = create_schedule(event)
       when Line::Bot::Event::Message
-        message = if !event.message['text'].nil? && event.message['text'][-2, 2] == '曜日'
-                    create_weekly_time_message(event)
-                  else
-                    create_response_message(event)
-                  end
+        # message = if !event.message['text'].nil? && event.message['text'][-2, 2] == '曜日'
+        #             create_weekly_time_message(event)
+        #           else
+        #             create_response_message(event)
+        #           end
+        message = {
+  "type": "flex",
+  "altText": "予約票",
+  "contents": {
+    "type": "bubble",
+    "body": {
+      "type": "box",
+      "layout": "vertical",
+      "spacing": "xl",
+      "contents": [
+        {
+          "type": "text",
+          "text": "予約票",
+          "align": "center",
+          "size": "xl",
+          "color": "#1DB446"
+        },
+        {
+          "type": "separator"
+        },
+        {
+          "type": "box",
+          "layout": "horizontal",
+          "contents": [
+            {
+              "type": "box",
+              "layout": "vertical",
+              "flex": 8,
+              "spacing": "sm",
+              "contents": [
+                {
+                  "type": "text",
+                  "text": "10年後の仕事図鑑",
+                  "weight": "bold"
+                },
+                {
+                  "type": "text",
+                  "text": "順番：191/233",
+                  "size": "xs",
+                  "color": "#aaaaaa"
+                }
+              ]
+            },
+            {
+              "type": "button",
+              "style": "primary",
+              "color": "#ff0000",
+              "flex": 2,
+              "height": "sm",
+              "action": {
+                "type": "postback",
+                "label": "X",
+                "displayText": "10年後の仕事図鑑をキャンセル",
+                "data": "{\"_type\":\"intent\",\"intent\":{\"name\":\"cancel-reservation\",\"parameters\":{\"reservation_number\":\"1 \"}}}"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
       end
       client.reply_message(event['replyToken'], message)
     end
