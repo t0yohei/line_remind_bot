@@ -26,6 +26,7 @@ group :development, :test do
   gem 'factory_bot_rails'
   gem 'guard-rspec'
   gem 'spring-commands-rspec'
+  gem 'dotenv-rails'
 end
 
 group :development do
