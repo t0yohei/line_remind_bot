@@ -24,7 +24,7 @@ module Tasks
             post_year: date.year,
             post_month: date.mon,
             post_hour: date.hour,
-            post_minute: date.min
+            post_minute: date.min...(date.min + 10)
           ).select(:title, :talk_room_type_id, :talk_room_id)
       end
 
@@ -33,7 +33,7 @@ module Tasks
           Schedule.where(
             schedule_type: Schedule.schedule_types[:everyday],
             post_hour: date.hour,
-            post_minute: date.min
+            post_minute: date.min...(date.min + 10)
           ).select(:title, :talk_room_type_id, :talk_room_id)
       end
 
@@ -43,7 +43,7 @@ module Tasks
             schedule_type: Schedule.schedule_types[:everyweek],
             post_wday: date.wday,
             post_hour: date.hour,
-            post_minute: date.min
+            post_minute: date.min...(date.min + 10)
           ).select(:title, :talk_room_type_id, :talk_room_id)
       end
 
@@ -53,7 +53,7 @@ module Tasks
             schedule_type: Schedule.schedule_types[:everymonth],
             post_day: date.day,
             post_hour: date.hour,
-            post_minute: date.min
+            post_minute: date.min...(date.min + 10)
           ).select(:title, :talk_room_type_id, :talk_room_id)
       end
 
