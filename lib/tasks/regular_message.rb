@@ -23,6 +23,7 @@ module Tasks
             schedule_type: Schedule.schedule_types[:specific_day],
             post_year: date.year,
             post_month: date.mon,
+            post_day: date.day,
             post_hour: date.hour,
             post_minute: date.min...(date.min + 10)
           ).select(:title, :talk_room_type_id, :talk_room_id)
