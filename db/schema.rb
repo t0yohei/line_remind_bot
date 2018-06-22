@@ -23,6 +23,8 @@ ActiveRecord::Schema.define(version: 20180528142416) do
     t.integer "post_wday"
     t.integer "post_hour"
     t.integer "post_minute"
+    t.boolean "sent", default: false, null: false
+    t.boolean "deleted", default: false, null: false
     t.string "create_user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false

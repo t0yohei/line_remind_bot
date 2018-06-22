@@ -11,6 +11,8 @@ class CreateSchedules < ActiveRecord::Migration[5.1]
       t.integer :post_wday
       t.integer :post_hour
       t.integer :post_minute
+      t.boolean :sent, default: false, null: false
+      t.boolean :deleted, default: false, null: false
       t.string :create_user_id
 
       t.timestamps
