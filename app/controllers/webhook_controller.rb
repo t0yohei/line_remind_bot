@@ -190,16 +190,45 @@ class WebhookController < ApplicationController
         message = create_weekly_message(event)
       when /毎月/
         message = create_monthly_message(event)
+      when /予定を削除/
+        message = create_default_delete_message
+      when /削除/
+        message = create_deleted_message
+        delete_schedule(event)
       end
     end
     message
   end
 
   def create_default_message
+    text = <<~DEFAULT_MESSAGE
+      ■タイトルとカテゴリを入力してください
+      ■カテゴリ：「一日だけ」・「毎日」・「毎週」・「毎月」
+      ----例----
+      海水浴
+      毎日
+    DEFAULT_MESSAGE
     message = {
       type: 'text',
-      text: 'タイトルとカテゴリを入力してください' \
-      "\nカテゴリ：「一日だけ」・「毎日」・「毎週」・「毎月」\n例：\n海水浴\n毎日"
+      text: text
+    }
+    message
+  end
+
+  def create_default_delete_message
+    target_list = Schedule.inactive.pluck(:title).join(',')
+    text = <<~DELETE_DEFAULT_MESSAGE
+      ■削除するスケジュールのタイトルとカテゴリを入力してください
+      ■カテゴリ：「一日だけ」・「毎日」・「毎週」・「毎月」
+      ■予定一覧：#{target_list}
+      ----例----
+      削除
+      海水浴
+      毎日
+    DELETE_DEFAULT_MESSAGE
+    message = {
+      type: 'text',
+      text: text
     }
     message
   end
