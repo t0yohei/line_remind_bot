@@ -191,10 +191,16 @@ class WebhookController < ApplicationController
       when /毎月/
         message = create_monthly_message(event)
       when /予定を削除/
-        message = create_default_delete_message
+        message = create_default_delete_message(event)
       when /削除/
-        message = create_deleted_message
-        delete_schedule(event)
+        if delete_schedule(event)
+          message = create_deleted_message(event)
+        else
+          message = {
+            type: 'text',
+            text: '削除に失敗しました'
+          }
+        end
       end
     end
     message
@@ -215,20 +221,43 @@ class WebhookController < ApplicationController
     message
   end
 
-  def create_default_delete_message
-    target_list = Schedule.inactive.pluck(:title).join(',')
+  def create_default_delete_message(event)
+    talk_room_type_id = TalkRoomType.find_by(type_name: event['source']['type']).id
+    target_id_type = TalkRoomType.find_by(id: talk_room_type_id).target_id_type
+    talk_room_id = event['source'][target_id_type]
+    target_list = Schedule.active.where(
+      talk_room_type_id: talk_room_type_id,
+      talk_room_id: talk_room_id
+    ).pluck(
+      :id,
+      :title
+    )
     text = <<~DELETE_DEFAULT_MESSAGE
-      ■削除するスケジュールのタイトルとカテゴリを入力してください
-      ■カテゴリ：「一日だけ」・「毎日」・「毎週」・「毎月」
-      ■予定一覧：#{target_list}
+      ■削除するスケジュールのIDを入力してください
+      ■予定一覧：#{target_list.map { |id, title| id.to_s + '.' + title }.join', '}
       ----例----
       削除
-      海水浴
-      毎日
+      1
     DELETE_DEFAULT_MESSAGE
     message = {
       type: 'text',
       text: text
+    }
+    message
+  end
+
+  def delete_schedule(event)
+    schedule_id = event.message['text'].delete("\n削除")
+    target_schedule = Schedule.find_by_id(schedule_id)
+    return nil if target_schedule.nil?
+    target_schedule.update_attribute(:deleted, true)
+  end
+
+  def create_deleted_message(event)
+    schedule_id = event.message['text'].delete("\n削除")
+    message = {
+      type: 'text',
+      text: "ID:#{schedule_id}を削除しました"
     }
     message
   end
