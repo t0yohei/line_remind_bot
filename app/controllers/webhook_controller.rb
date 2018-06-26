@@ -225,9 +225,12 @@ class WebhookController < ApplicationController
     talk_room_type_id = TalkRoomType.find_by(type_name: event['source']['type']).id
     target_id_type = TalkRoomType.find_by(id: talk_room_type_id).target_id_type
     talk_room_id = event['source'][target_id_type]
-    target_list = Schedule.active.where(
+    target_list = Schedule.where(
       talk_room_type_id: talk_room_type_id,
-      talk_room_id: talk_room_id
+      talk_room_id: talk_room_id,
+      deleted: false
+    ).where.not(
+      schedule_type: Schedule.schedule_types[:specific_day], sent: true
     ).pluck(
       :id,
       :title
