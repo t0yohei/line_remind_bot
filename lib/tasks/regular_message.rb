@@ -20,7 +20,7 @@ module Tasks
       def select_specific_day_schdules(date, schedules)
         schedules <<
           Schedule.where(
-            schedule_type: Schedule.schedule_types[:specific_day],
+            schedule_type: Schedule.active.schedule_types[:specific_day],
             post_year: date.year,
             post_month: date.mon,
             post_day: date.day,
@@ -34,7 +34,8 @@ module Tasks
           Schedule.where(
             schedule_type: Schedule.schedule_types[:everyday],
             post_hour: date.hour,
-            post_minute: date.min...(date.min + 10)
+            post_minute: date.min...(date.min + 10),
+            deleted: false
           ).select(:title, :talk_room_type_id, :talk_room_id)
       end
 
@@ -44,7 +45,8 @@ module Tasks
             schedule_type: Schedule.schedule_types[:everyweek],
             post_wday: date.wday,
             post_hour: date.hour,
-            post_minute: date.min...(date.min + 10)
+            post_minute: date.min...(date.min + 10),
+            deleted: false
           ).select(:title, :talk_room_type_id, :talk_room_id)
       end
 
@@ -54,14 +56,15 @@ module Tasks
             schedule_type: Schedule.schedule_types[:everymonth],
             post_day: date.day,
             post_hour: date.hour,
-            post_minute: date.min...(date.min + 10)
+            post_minute: date.min...(date.min + 10),
+            deleted: false
           ).select(:title, :talk_room_type_id, :talk_room_id)
       end
 
       def post_schedules(schedules)
         client ||= Line::Bot::Client.new do |config|
-          config.channel_secret = ENV["LINE_CHANNEL_SECRET"]
-          config.channel_token = ENV["LINE_CHANNEL_TOKEN"]
+          config.channel_secret = ENV['LINE_CHANNEL_SECRET']
+          config.channel_token = ENV['LINE_CHANNEL_TOKEN']
         end
 
         schedules.each do |type_schedules|
