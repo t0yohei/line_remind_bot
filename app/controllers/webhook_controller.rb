@@ -1,4 +1,6 @@
 class WebhookController < ApplicationController
+  before_action :validate_signature, only: :callback
+
   def callback
     body = request.body.read
     events = @line.client.parse_events_from(body)

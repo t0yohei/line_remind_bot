@@ -3,8 +3,6 @@ require 'line/bot'
 class ApplicationController < ActionController::Base
   protect_from_forgery except: [:callback]
 
-  before_action :validate_signature
-
   def validate_signature
     body = request.body.read
     signature = request.env['HTTP_X_LINE_SIGNATURE']
