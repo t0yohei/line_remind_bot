@@ -2,7 +2,11 @@ class WebhookController < ApplicationController
   before_action :validate_signature, only: :callback
 
   def callback
-    @line.events.each do |event|
+    @client_request.execute
+    @server_response = ServerResponse.new
+    @server_response.create_message(@client_request.events)
+    @server_response.send_message
+    @client_request.events.each do |event|
       case event
       when Line::Bot::Event::Postback
         message = create_schedule(event)
@@ -13,7 +17,7 @@ class WebhookController < ApplicationController
                     create_response_message(event)
                   end
       end
-      @line.client.reply_message(event['replyToken'], message)
+      @client_request.client.reply_message(event['replyToken'], message)
     end
     head :ok
   end
