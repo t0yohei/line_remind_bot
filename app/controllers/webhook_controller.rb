@@ -2,7 +2,7 @@ class WebhookController < ApplicationController
   before_action :validate_signature, only: :callback
 
   def callback
-    @client_request.execute
+    @client_request.analyze
     @server_response = ServerResponse.new
     @server_response.create_message(@client_request.events)
     @server_response.send_message
@@ -43,126 +43,6 @@ class WebhookController < ApplicationController
       }
     }
     message
-  end
-
-  def create_schedule(event)
-    post_data = event['postback']['data']
-    talk_room_type_id = TalkRoomType.find_by(type_name: event['source']['type']).id
-    target_id_type = TalkRoomType.find_by(id: talk_room_type_id).target_id_type
-    talk_room_id = event['source'][target_id_type]
-    create_user_id = event['source']['userId']
-
-    case post_data
-    when /一日だけ/
-      title = post_data.delete!("\n一日だけ")
-      schedule_type = 0
-      post_date = Time.zone.parse(event['postback']['params']['datetime'])
-      post_year = post_date.year
-      post_month = post_date.mon
-      post_day = post_date.day
-      post_hour = post_date.hour
-      post_minute = post_date.min
-      new_schedule = Schedule.new(
-        title: title,
-        talk_room_type_id: talk_room_type_id,
-        talk_room_id: talk_room_id,
-        schedule_type: schedule_type,
-        post_year: post_year,
-        post_month: post_month,
-        post_day: post_day,
-        post_hour: post_hour,
-        post_minute: post_minute,
-        create_user_id: create_user_id
-      )
-      if new_schedule.save
-        return create_complete_message(event)
-      else
-        return 'エラーが発生しました'
-      end
-
-    when /毎日/
-      title = post_data.delete!("\n毎日")
-      schedule_type = 1
-      post_time = Time.zone.parse(event['postback']['params']['time'])
-      post_hour = post_time.hour
-      post_minute = post_time.min
-      new_schedule = Schedule.new(
-        title: title,
-        talk_room_type_id: talk_room_type_id,
-        talk_room_id: talk_room_id,
-        schedule_type: schedule_type,
-        post_hour: post_hour,
-        post_minute: post_minute,
-        create_user_id: create_user_id
-      )
-      if new_schedule.save
-        return create_complete_message(event)
-      else
-        return 'エラーが発生しました'
-      end
-    when /毎週/
-      schedule_type = 2
-      post_day = event['postback']['data'][-3, 3]
-      title = post_data.delete("\n毎週").delete('その他').delete(post_day)
-      case post_day
-      when '日曜日'
-        post_wday = Schedule.post_wdays[:Sunday]
-      when '月曜日'
-        post_wday = Schedule.post_wdays[:Monday]
-      when '火曜日'
-        post_wday = Schedule.post_wdays[:Tuesday]
-      when '水曜日'
-        post_wday = Schedule.post_wdays[:Wednesday]
-      when '木曜日'
-        post_wday = Schedule.post_wdays[:Thursday]
-      when '金曜日'
-        post_wday = Schedule.post_wdays[:Friday]
-      when '土曜日'
-        post_wday = Schedule.post_wdays[:Saturday]
-      end
-      post_time = Time.zone.parse(event['postback']['params']['time'])
-      post_hour = post_time.hour
-      post_minute = post_time.min
-      new_schedule = Schedule.new(
-        title: title,
-        talk_room_type_id: talk_room_type_id,
-        talk_room_id: talk_room_id,
-        schedule_type: schedule_type,
-        post_wday: post_wday,
-        post_hour: post_hour,
-        post_minute: post_minute,
-        create_user_id: create_user_id
-      )
-      if new_schedule.save
-        return create_complete_message(event)
-      else
-        return 'エラーが発生しました'
-      end
-
-    when /毎月/
-      title = post_data.delete!("\n毎月")
-      schedule_type = 3
-      post_date = Time.zone.parse(event['postback']['params']['datetime'])
-      post_day = post_date.day
-      post_hour = post_date.hour
-      post_minute = post_date.min
-      new_schedule = Schedule.new(
-        title: title,
-        talk_room_type_id: talk_room_type_id,
-        talk_room_id: talk_room_id,
-        schedule_type: schedule_type,
-        post_day: post_day,
-        post_hour: post_hour,
-        post_minute: post_minute,
-        create_user_id: create_user_id
-      )
-      if new_schedule.save
-        return create_complete_message(event)
-      else
-        return 'エラーが発生しました'
-      end
-
-    end
   end
 
   def create_response_message(event)
@@ -208,8 +88,8 @@ class WebhookController < ApplicationController
       ■タイトルとカテゴリを入力してください
       ■カテゴリ：「一日だけ」・「毎日」・「毎週」・「毎月」
       ----例----
-      海水浴
       毎日
+      海水浴
     DEFAULT_MESSAGE
     message = {
       type: 'text',
