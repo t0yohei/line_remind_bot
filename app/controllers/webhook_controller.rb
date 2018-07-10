@@ -2,27 +2,27 @@ class WebhookController < ApplicationController
   before_action :validate_signature, only: :callback
 
   def callback
-    @client_request.analyze
-    @server_response = ServerResponse.new
-    @server_response.create_message(@client_request.events)
-    @server_response.send_message
-    @client_request.events.each do |event|
+    @api_client.events.each do |event|
       case event
       when Line::Bot::Event::Postback
-        message = create_schedule(event)
+        create_schedule(event)
       when Line::Bot::Event::Message
-        message = if !event.message['text'].nil? && event.message['text'][-2, 2] == '曜日'
-                    create_weekly_time_message(event)
-                  else
-                    create_response_message(event)
-                  end
+        @api_client.create_reply_message(event)
       end
-      @client_request.client.reply_message(event['replyToken'], message)
+      @client_request.client.reply_message(event['replyToken'], @api_client.display_message)
     end
     head :ok
   end
 
   private
+
+  def create_schedule
+    if @api_client.create_schedule(event)
+      @api_client.create_complete_message(event)
+    else
+      @api_client.create_fail_message(event)
+    end
+  end
 
   def create_weekly_time_message(event)
     message = {
