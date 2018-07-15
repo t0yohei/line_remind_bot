@@ -32,7 +32,7 @@ module Tasks
       def select_daily_schdules(date, schedules)
         schedules <<
           Schedule.where(
-            schedule_type: Schedule.schedule_types[:everyday],
+            schedule_type: Schedule.schedule_types[:daily],
             post_hour: date.hour,
             post_minute: date.min...(date.min + 10),
             deleted: false
@@ -42,7 +42,7 @@ module Tasks
       def select_weekly_schdules(date, schedules)
         schedules <<
           Schedule.where(
-            schedule_type: Schedule.schedule_types[:everyweek],
+            schedule_type: Schedule.schedule_types[:weekly],
             post_wday: date.wday,
             post_hour: date.hour,
             post_minute: date.min...(date.min + 10),
@@ -53,7 +53,7 @@ module Tasks
       def select_monthly_schdules(date, schedules)
         schedules <<
           Schedule.where(
-            schedule_type: Schedule.schedule_types[:everymonth],
+            schedule_type: Schedule.schedule_types[:monthly],
             post_day: date.day,
             post_hour: date.hour,
             post_minute: date.min...(date.min + 10),
