@@ -27,7 +27,7 @@ class LineApiClient
       if event.message['text'].start_with?('予定を削除')
         analyze_delete_message(event)
       else
-        MessageFactory.get_react_message(event)
+        MessageFactory.generate_react_message(event)
       end
     end
   end
@@ -36,17 +36,17 @@ class LineApiClient
 
   def analyze_postback(event)
     if ScheduleRegister.create_schedule(event)
-      MessageFactory.get_complete_message(event)
+      MessageFactory.generate_complete_message(event)
     else
-      MessageFactory.get_fail_message(event)
+      MessageFactory.generate_fail_message(event)
     end
   end
 
   def analyze_delete_message(event)
     if ScheduleRegister.delete_schedule(event)
-      MessageFactory.get_delete_complete_message(event)
+      MessageFactory.generate_delete_complete_message(event)
     else
-      MessageFactory.get_delete_fail_message(event)
+      MessageFactory.generate_delete_fail_message(event)
     end
   end
 end

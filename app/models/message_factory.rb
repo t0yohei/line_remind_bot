@@ -2,23 +2,23 @@ class MessageFactory
   include ActiveModel::Model
 
   class << self
-    def get_complete_message(event)
+    def generate_complete_message(event)
       case event['postback']['params'].first.first
       when /datetime/
-        get_datetime_complete_message(event)
+        generate_datetime_complete_message(event)
       when /time/
-        get_time_complete_message(event)
+        generate_time_complete_message(event)
       end
     end
 
-    def get_fail_message(_event)
+    def generate_fail_message(_event)
       {
         type: 'text',
         text: '予定の登録に失敗しました。'
       }
     end
 
-    def get_delete_complete_message(event)
+    def generate_delete_complete_message(event)
       schedule_id = event.message['text'].delete("\n削除")
       message = {
         type: 'text',
@@ -27,7 +27,7 @@ class MessageFactory
       message
     end
 
-    def get_delete_fail_message(event)
+    def generate_delete_fail_message(event)
       schedule_id = event.message['text'].delete("\n削除")
       {
         type: 'text',
@@ -35,40 +35,40 @@ class MessageFactory
       }
     end
 
-    def get_react_message(event)
+    def generate_react_message(event)
       input_text = event.message['text']
       case input_text
       when /\A(> )?予定を登録/
         default_message
       when /\A一日だけ*/
-        get_specific_day_message(event)
+        generate_specific_day_message(event)
       when /\A毎日*/
-        get_daily_message(event)
+        generate_daily_message(event)
       when /\A毎週その他.曜日*/
         # 特定の曜日が選択された場合
-        get_weekly_time_message(event)
+        generate_weekly_time_message(event)
       when /\A毎週その他*/
         # その他が選択された場合
-        get_another_weekly_message(event)
+        generate_another_weekly_message(event)
       when /\A毎週*/
-        get_weekly_message(event)
+        generate_weekly_message(event)
       when /\A毎月*/
-        get_monthly_message(event)
+        generate_monthly_message(event)
       when /\A(> )?予定を削除/
-        get_default_delete_message(event)
+        generate_default_delete_message(event)
       end
     end
 
     private
 
-    def get_datetime_complete_message(event)
+    def generate_datetime_complete_message(event)
       {
         type: 'text',
         text: event['postback']['params']['datetime'] + ' が入力されました'
       }
     end
 
-    def get_time_complete_message(event)
+    def generate_time_complete_message(event)
       {
         type: 'text',
         text: event['postback']['params']['time'] + ' が入力されました'
@@ -92,7 +92,7 @@ class MessageFactory
         DEFAULT_MESSAGE
     end
 
-    def get_default_delete_message(event)
+    def generate_default_delete_message(event)
       target_list = search_delete_target_list(event)
       {
         type: 'text',
@@ -130,7 +130,7 @@ class MessageFactory
       DELETE_DEFAULT_MESSAGE
     end
 
-    def get_specific_day_message(event)
+    def generate_specific_day_message(event)
       {
         type: 'template',
         altText: 'this is an template message',
@@ -150,7 +150,7 @@ class MessageFactory
       }
     end
 
-    def get_daily_message(event)
+    def generate_daily_message(event)
       {
         type: 'template',
         altText: 'this is an template message',
@@ -170,7 +170,7 @@ class MessageFactory
       }
     end
 
-    def get_weekly_message(event)
+    def generate_weekly_message(event)
       {
         type: 'template',
         altText: 'this is an template message',
@@ -204,7 +204,7 @@ class MessageFactory
       }
     end
 
-    def get_another_weekly_message(event)
+    def generate_another_weekly_message(event)
       {
         type: 'template',
         altText: 'this is an template message',
@@ -238,7 +238,7 @@ class MessageFactory
       }
     end
 
-    def get_weekly_time_message(event)
+    def generate_weekly_time_message(event)
       {
         type: 'template',
         template: {
@@ -257,7 +257,7 @@ class MessageFactory
       }
     end
 
-    def get_monthly_message(event)
+    def generate_monthly_message(event)
       {
         type: 'template',
         altText: 'this is an template message',
