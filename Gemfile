@@ -13,7 +13,8 @@ gem 'whenever', :require => false
 gem 'uglifier'
 
 group :production do
-  gem 'pg', '0.18.4'
+  # gem 'pg', '0.18.4'
+  gem 'mysql', '5.7.23'
 end
 
 group :development, :test do
