@@ -14,7 +14,7 @@ gem 'uglifier'
 
 group :production do
   # gem 'pg', '0.18.4'
-  gem 'mysql', '5.7.23'
+  gem 'mysql2', '5.7.23'
 end
 
 group :development, :test do
