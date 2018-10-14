@@ -24,8 +24,8 @@ production:
  adapter: mysql2
  encoding: utf8
  pool: 5
- socket: /var/lib/mysql/mysql.socket
- host: <%= ENV['LINE_REMIND_BOT_MYSQL_HOST'] %>
  database: <%= ENV['LINE_REMIND_BOT_MYSQL_NAME'] %>
  username: <%= ENV['LINE_REMIND_BOT_MYSQL_USERNAME'] %>
  password: <%= ENV['LINE_REMIND_BOT_MYSQL_PASSWORD'] %>
+ port: <%= ENV['LINE_REMIND_BOT_MYSQL_PORT'] %>
+ host: <%= ENV['LINE_REMIND_BOT_MYSQL_HOST'] %>
