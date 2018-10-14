@@ -17,6 +17,10 @@ group :production do
   gem 'mysql2'
 end
 
+group :production, :staging do
+    gem 'unicorn'
+end
+
 group :development, :test do
   gem 'sqlite3'
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
