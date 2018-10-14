@@ -18,7 +18,8 @@ class Schedule < ApplicationRecord
       post_month: now.mon,
       post_day: now.day,
       post_hour: now.hour,
-      post_minute: now.min...(now.min + 10),
+      # post_minute: now.min...(now.min + 10),
+      post_minute: now.min,
       deleted: false
     ).select(:title, :talk_room_type_id, :talk_room_id)
   end
@@ -28,7 +29,8 @@ class Schedule < ApplicationRecord
     Schedule.where(
       schedule_type: Schedule.schedule_types[:daily],
       post_hour: now.hour,
-      post_minute: now.min...(now.min + 10),
+      # post_minute: now.min...(now.min + 10),
+      post_minute: now.min,
       deleted: false
     ).select(:title, :talk_room_type_id, :talk_room_id)
   end
@@ -39,7 +41,8 @@ class Schedule < ApplicationRecord
       schedule_type: Schedule.schedule_types[:weekly],
       post_wday: now.wday,
       post_hour: now.hour,
-      post_minute: now.min...(now.min + 10),
+      # post_minute: now.min...(now.min + 10),
+      post_minute: now.min,
       deleted: false
     ).select(:title, :talk_room_type_id, :talk_room_id)
   end
@@ -50,7 +53,8 @@ class Schedule < ApplicationRecord
       schedule_type: Schedule.schedule_types[:monthly],
       post_day: now.day,
       post_hour: now.hour,
-      post_minute: now.min...(now.min + 10),
+      # post_minute: now.min...(now.min + 10),
+      post_minute: now.min,
       deleted: false
     ).select(:title, :talk_room_type_id, :talk_room_id)
   end
