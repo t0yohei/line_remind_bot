@@ -3,6 +3,9 @@ set :output, 'log/crontab.log'
 # development 環境で cron 実行
 set :environment, :development
 
+# production 環境で cron 実行
+# set :environment, :production
+
 # 1分毎に回す
 every 1.minute do
   runner 'Tasks::RegularMessage.remind_schedules'
