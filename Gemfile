@@ -11,6 +11,9 @@ gem 'puma', '~> 3.7'
 gem 'line-bot-api'
 gem 'whenever', :require => false
 gem 'uglifier'
+gem 'pry-rails'
+gem 'pry-byebug'
+gem 'pry-doc'
 
 group :production do
   # gem 'pg', '0.18.4'
