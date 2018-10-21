@@ -24,7 +24,7 @@ class LineApiClient
     when Line::Bot::Event::Postback
       analyze_postback(event)
     when Line::Bot::Event::Message
-      if event.message['text'].start_with?('予定を削除')
+      if event.message['text'].to_s.start_with?('予定を削除')
         analyze_delete_message(event)
       else
         MessageFactory.get_react_message(event)
