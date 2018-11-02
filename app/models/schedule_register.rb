@@ -17,7 +17,7 @@ class ScheduleRegister
     end
 
     def delete_schedule(event)
-      schedule_id = event.message['text'].sub(/削除/)
+      schedule_id = event.message['text'].sub(/削除/, '')
       target_schedule = Schedule.find_by_id(schedule_id)
       return false if target_schedule.nil?
       target_schedule.update_attribute(:deleted, true)
@@ -25,16 +25,14 @@ class ScheduleRegister
     end
 
     def get_schedule_info(event)
-      talk_room_type_id = TalkRoomType.find_by(
-        type_name: event['source']['type']
-      ).id
-      target_id_type = TalkRoomType.find_by(
-        id: talk_room_type_id
-      ).target_id_type
+      talk_room_type_id =
+        TalkRoomType.find_by(type_name: event['source']['type']).id
+      target_id_type =
+        TalkRoomType.find_by(id: talk_room_type_id).target_id_type
       talk_room_id = event['source'][target_id_type]
-      {
+      return {
         post_data: event['postback']['data'],
-        talk_room_type_id: target_id_type,
+        talk_room_type_id: talk_room_type_id,
         talk_room_id: talk_room_id,
         create_user_id: event['source']['userId']
       }
@@ -43,7 +41,7 @@ class ScheduleRegister
     def create_specific_day_schedule(event, schedule_info)
       post_date = Time.zone.parse(event['postback']['params']['datetime'])
       new_schedule = Schedule.new(
-        title: schedule_info[:post_data].sub(/[一1]日だけ/),
+        title: schedule_info[:post_data].sub(/[一1]日だけ/, ''),
         talk_room_type_id: schedule_info[:talk_room_type_id],
         talk_room_id: schedule_info[:talk_room_id],
         schedule_type: Schedule.schedule_types[:specific_day],
@@ -57,10 +55,10 @@ class ScheduleRegister
       return true if new_schedule.save
     end
 
-    def create_daily_schedule(event)
+    def create_daily_schedule(event, schedule_info)
       post_time = Time.zone.parse(event['postback']['params']['time'])
       new_schedule = Schedule.new(
-        title: schedule_info[:post_data].sub(/毎日/),
+        title: schedule_info[:post_data].sub(/毎日/, ''),
         talk_room_type_id: schedule_info[:talk_room_type_id],
         talk_room_id: schedule_info[:talk_room_id],
         schedule_type: Schedule.schedule_types[:daily],
@@ -71,7 +69,7 @@ class ScheduleRegister
       return true if new_schedule.save
     end
 
-    def create_weekly_schedule(event)
+    def create_weekly_schedule(event, schedule_info)
       post_day = event['postback']['data'][-3, 3]
       post_wday = get_post_wday(post_day)
       post_time = Time.zone.parse(event['postback']['params']['time'])
@@ -88,10 +86,10 @@ class ScheduleRegister
       return true if new_schedule.save
     end
 
-    def create_monthly_schedule(event)
+    def create_monthly_schedule(event, schedule_info)
       post_date = Time.zone.parse(event['postback']['params']['datetime'])
       new_schedule = Schedule.new(
-        title: schedule_info[:post_data].sub(/毎月/),
+        title: schedule_info[:post_data].sub(/毎月/, ''),
         talk_room_type_id: schedule_info[:talk_room_type_id],
         talk_room_id: schedule_info[:talk_room_id],
         schedule_type: Schedule.schedule_types[:monthly],

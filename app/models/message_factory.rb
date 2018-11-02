@@ -37,22 +37,28 @@ class MessageFactory
 
     def get_react_message(event)
       input_text = event.message['text']
+      p 'input_text', input_text
       case input_text
       when /\A(> )?予定を登録/
         get_default_message
-      when /\A一日だけ*/
+      when /\A一日だけ.*/
         get_specific_day_message(event)
-      when /\A毎日*/
+      when /\A毎日.*/
+        p '毎日'
         get_daily_message(event)
-      when /\A毎週その他.曜日*/
+      when /\A毎週.*曜日/m
+        p '毎週曜日'
         # 特定の曜日が選択された場合
         get_weekly_time_message(event)
-      when /\A毎週その他*/
+      when /\A毎週.*その他.*/m
+        p '毎週その他'
         # その他が選択された場合
         get_another_weekly_message(event)
-      when /\A毎週*/
+      when /\A毎週.*/
+        p '毎週'
         get_weekly_message(event)
-      when /\A毎月*/
+      when /\A毎月.*/
+        p '毎月'
         get_monthly_message(event)
       when /\A(> )?予定を削除/
         get_default_delete_message(event)
@@ -250,6 +256,7 @@ class MessageFactory
     def get_weekly_time_message(event)
       {
         type: 'template',
+        altText: 'this is an template message',
         template: {
           type: 'buttons',
           title: '時間を選択',
