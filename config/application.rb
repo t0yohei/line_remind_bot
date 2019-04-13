@@ -16,7 +16,7 @@ require 'sprockets/railtie'
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
 
-module SampleBot
+module LineRemindBot
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 5.1
@@ -31,6 +31,9 @@ module SampleBot
 
     # Don't generate system test files.
     config.generators.system_tests = nil
+
+    # Active Record settings
+    config.active_record.sqlite3.represent_boolean_as_integer = true
 
     config.generators do |g|
       g.test_framework :rspec,
