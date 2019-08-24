@@ -3,10 +3,10 @@ class WebhookController < ApplicationController
   def callback
     @api_client = LineApiClient.new
     @api_client.set_events(request)
-    @api_client.events.each do |event|
-      message = @api_client.analyze_event(event)
-      @api_client.reply_message(event['replyToken'], message)
-    end
+    replying_messages = @api_client.analayze_events
+    @api_client.reply_messages(replying_messages)
+
+    # リクエストもとの Webhook には必ず 200 を返す必要がある。
     head :ok
   end
 end

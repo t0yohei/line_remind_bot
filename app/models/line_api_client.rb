@@ -21,22 +21,28 @@ class LineApiClient
     end
   end
 
-  # Line API クライアントの reqlay_message メソッドをラップする
-  def reply_message(event, message)
-    client.reply_message(event['replyToken'], message)
+  #
+  # webhook で送られてくるイベントの解析を実行する処理
+  # 解析の詳細は、 LineApiClient::EventAnalyzer クラスに任せる
+  # @return [Array] :replying_messages ReplyingMessage クラスのインスタンスの配列
+  #
+  def analayze_events
+    return LineApiClient::EventAnalyzer.new(events).perform
   end
 
-  def analyze_event(event)
-    case event
-    when Line::Bot::Event::Postback
-      analyze_postback(event)
-    when Line::Bot::Event::Message
-      if event.message['text'].to_s.start_with?('予定を削除')
-        analyze_delete_message(event)
-      else
-        MessageFactory.get_react_message(event)
-      end
+  #
+  # replying_messages オブジェクトを元にリプライを送る
+  # @params [Array] :replying_messages ReplyingMessage クラスのインスタンスの配列
+  #
+  def reply_messages(replying_messages)
+    replying_messages.each do |replying_message|
+      reply_message(replying_message.reply_token, replying_message.message)
     end
+  end
+
+  # Line API クライアントの reqlay_message メソッドをラップする
+  def reply_message(reply_token, message)
+    client.reply_message(reply_token, message)
   end
 
   private
@@ -48,22 +54,6 @@ class LineApiClient
       error 400 do
         'Bad Request'
       end
-    end
-  end
-
-  def analyze_postback(event)
-    if ScheduleRegister.create_schedule(event)
-      MessageFactory.get_complete_message(event)
-    else
-      MessageFactory.get_fail_message(event)
-    end
-  end
-
-  def analyze_delete_message(event)
-    if ScheduleRegister.delete_schedule(event)
-      MessageFactory.get_delete_complete_message(event)
-    else
-      MessageFactory.get_delete_fail_message(event)
     end
   end
 end
