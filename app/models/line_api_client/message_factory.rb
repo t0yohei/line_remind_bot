@@ -3,12 +3,10 @@ class LineApiClient::MessageFactory
 
   class << self
     def get_complete_message(event)
-      case event['postback']['params'].first.first
-      when /datetime/
-        get_datetime_complete_message(event)
-      when /time/
-        get_time_complete_message(event)
-      end
+      postback_params = event['postback']['params']
+      LineApiClient::MessageFactory::CompleteMessageBuilder.new(
+        postback_params
+      ).build
     end
 
     def get_fail_message(_event)
@@ -68,20 +66,6 @@ class LineApiClient::MessageFactory
     end
 
     private
-
-    def get_datetime_complete_message(event)
-      {
-        type: 'text',
-        text: event['postback']['params']['datetime'] + ' が入力されました'
-      }
-    end
-
-    def get_time_complete_message(event)
-      {
-        type: 'text',
-        text: event['postback']['params']['time'] + ' が入力されました'
-      }
-    end
 
     def get_default_message
       {
