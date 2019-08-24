@@ -14,10 +14,12 @@ class LineApiClient
     end
   end
 
+  # request の正当性をチェック後、API クライアントのインスタンス変数に events を設定する
   def set_events(request)
-    validate_signature(request)
+    request_body = request.body.read
+    validate_signature(request_body, request.env['HTTP_X_LINE_SIGNATURE'])
     if events.blank?
-      @events = client.parse_events_from(request.body.read)
+      @events = client.parse_events_from(request_body)
     end
   end
 
@@ -47,9 +49,7 @@ class LineApiClient
 
   private
 
-  def validate_signature(request)
-    body = request.body.read
-    signature = request.env['HTTP_X_LINE_SIGNATURE']
+  def validate_signature(body, signature)
     unless client.validate_signature(body, signature)
       error 400 do
         'Bad Request'
