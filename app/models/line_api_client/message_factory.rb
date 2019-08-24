@@ -1,4 +1,4 @@
-class MessageFactory
+class LineApiClient::MessageFactory
   include ActiveModel::Model
 
   class << self
