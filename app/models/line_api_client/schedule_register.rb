@@ -1,4 +1,4 @@
-class ScheduleRegister
+class LineApiClient::ScheduleRegister
   include ActiveModel::Model
 
   class << self

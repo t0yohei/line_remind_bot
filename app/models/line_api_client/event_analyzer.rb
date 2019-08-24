@@ -42,7 +42,7 @@ class LineApiClient::EventAnalyzer
   end
 
   def analyze_postback(event)
-    if ScheduleRegister.create_schedule(event)
+    if LineApiClient::ScheduleRegister.create_schedule(event)
       LineApiClient::MessageFactory.get_complete_message(event)
     else
       LineApiClient::MessageFactory.get_fail_message(event)
@@ -58,7 +58,7 @@ class LineApiClient::EventAnalyzer
   end
 
   def analyze_delete_message(event)
-    if ScheduleRegister.delete_schedule(event)
+    if LineApiClient::ScheduleRegister.delete_schedule(event)
       LineApiClient::MessageFactory.get_delete_complete_message(event)
     else
       LineApiClient::MessageFactory.get_delete_fail_message(event)
