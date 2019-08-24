@@ -39,7 +39,7 @@ class MessageFactory
       input_text = event.message['text']
       case input_text
       when /\A(> )?予定を登録/
-        default_message
+        get_default_message
       when /\A一日だけ*/
         get_specific_day_message(event)
       when /\A毎日*/
@@ -56,6 +56,8 @@ class MessageFactory
         get_monthly_message(event)
       when /\A(> )?予定を削除/
         get_default_delete_message(event)
+      else
+        get_not_found_message
       end
     end
 
@@ -75,7 +77,7 @@ class MessageFactory
       }
     end
 
-    def default_message
+    def get_default_message
       {
         type: 'text',
         text: default_text
@@ -97,6 +99,13 @@ class MessageFactory
       {
         type: 'text',
         text: delete_default_message(target_list)
+      }
+    end
+
+    def get_not_found_message
+      {
+        type: 'text',
+        text: 'any response message was found'
       }
     end
 

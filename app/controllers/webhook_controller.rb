@@ -1,12 +1,12 @@
 class WebhookController < ApplicationController
-  before_action :validate_signature, only: :callback
 
   def callback
-    events = @api_client.client.parse_events_from(request.body.read)
-    events.each do |event|
-      message = @api_client.analyze_event(event)
-      @api_client.client.reply_message(event['replyToken'], message)
-    end
+    @api_client = LineApiClient.new
+    @api_client.set_events(request)
+    replying_messages = @api_client.analayze_events
+    @api_client.reply_messages(replying_messages)
+
+    # リクエストもとの Webhook には必ず 200 を返す必要がある。
     head :ok
   end
 end
