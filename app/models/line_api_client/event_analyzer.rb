@@ -50,7 +50,7 @@ class LineApiClient::EventAnalyzer
   end
 
   def analyze_message(event)
-    if event.message['text'].to_s.start_with?('予定を削除')
+    if event.message['text'].to_s.start_with?('削除')
       analyze_delete_message(event)
     else
       LineApiClient::MessageFactory.get_react_message(event)
