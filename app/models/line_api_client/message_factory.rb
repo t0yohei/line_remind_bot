@@ -2,6 +2,12 @@ class LineApiClient::MessageFactory
   include ActiveModel::Model
 
   class << self
+    def get_react_message(event)
+      LineApiClient::MessageFactory::ReactMessageBuilder.new(
+        event
+      ).build
+    end
+
     def get_complete_message(event)
       postback_params = event['postback']['params']
       LineApiClient::MessageFactory::CompleteMessageBuilder.new(
@@ -31,12 +37,6 @@ class LineApiClient::MessageFactory
         type: 'text',
         text: "ID:#{schedule_id}の削除に失敗しました"
       }
-    end
-
-    def get_react_message(event)
-      LineApiClient::MessageFactory::ReactMessageBuilder.new(
-        event
-      ).build
     end
   end
 end
