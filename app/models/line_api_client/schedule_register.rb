@@ -5,13 +5,13 @@ class LineApiClient::ScheduleRegister
     def create_schedule(event)
       schedule_info = get_schedule_info(event)
       case schedule_info[:post_data]
-      when /\A[一1]日だけ*/
+      when /\A[一1]日だけ/
         create_specific_day_schedule(event, schedule_info)
-      when /\A毎日*/
+      when /\A毎日/
         create_daily_schedule(event, schedule_info)
-      when /\A毎週*/
+      when /\A毎週/
         create_weekly_schedule(event, schedule_info)
-      when /\A毎月*/
+      when /\A毎月/
         create_monthly_schedule(event, schedule_info)
       end
     end
