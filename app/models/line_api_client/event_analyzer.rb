@@ -28,32 +28,40 @@ class LineApiClient::EventAnalyzer
 
   private
 
+  #
+  # event の内容を解析する
+  # event の種類は postback, message が存在する
+  #
   def analyze_event(event)
     case event
     when Line::Bot::Event::Postback
       analyze_postback(event)
     when Line::Bot::Event::Message
-      if event.message['text'].to_s.start_with?('予定を削除')
-        analyze_delete_message(event)
-      else
-        MessageFactory.get_react_message(event)
-      end
+      analyze_message(event)
     end
   end
 
-    def analyze_postback(event)
-    if ScheduleRegister.create_schedule(event)
-      MessageFactory.get_complete_message(event)
+  def analyze_postback(event)
+    if LineApiClient::ScheduleRegister.create_schedule(event)
+      LineApiClient::MessageFactory.get_complete_message(event)
     else
-      MessageFactory.get_fail_message(event)
+      LineApiClient::MessageFactory.get_fail_message(event)
+    end
+  end
+
+  def analyze_message(event)
+    if event.message['text'].to_s.start_with?('削除')
+      analyze_delete_message(event)
+    else
+      LineApiClient::MessageFactory.get_react_message(event)
     end
   end
 
   def analyze_delete_message(event)
-    if ScheduleRegister.delete_schedule(event)
-      MessageFactory.get_delete_complete_message(event)
+    if LineApiClient::ScheduleRegister.delete_schedule(event)
+      LineApiClient::MessageFactory.get_delete_complete_message(event)
     else
-      MessageFactory.get_delete_fail_message(event)
+      LineApiClient::MessageFactory.get_delete_fail_message(event)
     end
   end
 end
