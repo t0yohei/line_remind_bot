@@ -7,7 +7,7 @@ end
 
 ruby '2.6.2'
 gem 'rails', '~> 5.2.3'
-gem 'puma', '~> 3.7'
+gem 'puma', '~> 3.12'
 gem 'line-bot-api'
 gem 'whenever', :require => false
 gem 'uglifier'
